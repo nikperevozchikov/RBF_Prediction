@@ -21,24 +21,25 @@ namespace RBF_1
         {
             InitializeComponent();
         }
+
         private static int countRow = 100;
         private static int numInput = 2;
-        private static int numHidden;// = 3;
+        private static int numHidden; // = 3;
         private static int numOutput = 1;
         private static int countIter = 1000;
         private string filename = "iris_train.txt";
 
         private static Matrix weight; //= new Matrix(numHidden, numOutput);
-        private static Matrix centroids;// = new Matrix(numHidden, numInput);        //Центры
+        private static Matrix centroids; // = new Matrix(numHidden, numInput);        //Центры
         private static Matrix x;
         private static double[] y = new double[numOutput];
         private static Random rnd = new Random();
-        private static double er;//= 0; // new double[countRow];      //105
+        private static double er; //= 0; // new double[countRow];      //105
         private static double errTest;
         double[,] D = new double[countRow, numOutput];
         private static double n;
         private static NeuralNetwork rn;
-        public static int temp;// = 0;
+        public static int temp; // = 0;
 
         public void SetC()
         {
@@ -53,11 +54,9 @@ namespace RBF_1
 
         private void button_Sample_Click(object sender, EventArgs e)
         {
+            label_err.Text = "Learning error: ";
 
-
-            label_err.Text = "Ошибка обучения: ";
-
-            label_Test.Text = "Ошибка тестирования: ";
+            label_Test.Text = "Testing error: ";
 
             //Коэффициент обучение сети
             n = Convert.ToDouble(textBox_n.Text);
@@ -67,7 +66,7 @@ namespace RBF_1
             numInput = Convert.ToInt32(textBox2.Text);
             numHidden = Convert.ToInt32(textBox_C.Text);
             countIter = Convert.ToInt32(textBox1.Text);
-            // чтение входных данных
+            //чтение входных данных
             if (checkBox1.Checked == true)
                 CreateValues("dollar.txt");
             else
@@ -77,28 +76,7 @@ namespace RBF_1
             {
                 d[i] = D[i, 0];
             }
-            //x = ReaderWriter.ReadMatrix(filename, countRow, numInput);
-            //double[] d = ReaderWriter.ReadVector(filename, countRow, numInput);
-            //D = new double[countRow, numOutput];
-            //RecountD(d);
-
-            //   List<double[]> input = new List<double[]>();
-
-            //for (int i = 0; i < x.Row; i++)
-            //{
-            //    double[] list = new double[x.Column]; 
-
-            //    for (int j = 0; j < x.Column; j++)
-            //    {
-            //        list[j] = x.Get(i,j);
-            //    }
-            //    input.Add(list);
-            //}
-
-            //Network net = new Network(input, numHidden, n);
-
-
-
+           
             //Инициализация центроид
             centroids = ReaderWriter.ReadMatrixC(countRow, numInput, numHidden, d, x);
 
@@ -122,21 +100,21 @@ namespace RBF_1
             // chart2.ChartAreas[0].AxisX.Interval = 1;
             if (checkBox1.Checked == true)
             {
-                chart2.ChartAreas[0].AxisY.Minimum = 15;
-                chart2.ChartAreas[0].AxisY.Maximum = 90;
+                chart2.ChartAreas[0].AxisY.Minimum = 30;
+                chart2.ChartAreas[0].AxisY.Maximum = 100;
             }
             else
             {
-                chart2.ChartAreas[0].AxisY.Minimum = 0;
-                chart2.ChartAreas[0].AxisY.Maximum = 2;
+                chart2.ChartAreas[0].AxisY.Minimum = -100;
+                chart2.ChartAreas[0].AxisY.Maximum = 1000;
             }
-            //
+
 
 
             //  chart2.ChartAreas[0].AxisY.Interval = 10;
             chart2.Legends[0].Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            chart2.Series[0].Name = "Полученное значение";
-            chart2.Series[1].Name = "Исходное значение";
+            chart2.Series[0].Name = "Received value";
+            chart2.Series[1].Name = "Original value";
             chart2.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
             chart2.Series[1].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
 
@@ -147,7 +125,7 @@ namespace RBF_1
             }
 
             er = rn.errTrain;
-            label_err.Text = "Ошибка обучения: " + er;
+            label_err.Text = "Learning error: " + er;
 
             temp = rn.temp;
 
@@ -174,9 +152,10 @@ namespace RBF_1
             {
                 for (int j = i; j < numInput + i; j++)
                 {
-                    x.Set(i, j - i, getValue(j));
+                    x.Set(i, j - i, gV(j));
                 }
-                D[i, 0] = getValue(i + numInput + 1);
+
+                D[i, 0] = gV(i + numInput + 1);
             }
         }
 
@@ -191,33 +170,22 @@ namespace RBF_1
                 {
                     x.Set(i, j - i, tmp[j]);
                 }
+
                 D[i, 0] = tmp[i + numInput + 1];
             }
         }
-
-        //Формула
-        double getValue(int t)
+        
+        double gV(int t)
         {
-            return 0.5 * Math.Sin(3 * Math.Cos(0.1 * t) - 0.1 * t) + 1;
+            return  Math.Pow(t,2);
         }
 
 
         private void button_test_Click(object sender, EventArgs e)
         {
-            countRow = (int)(countRow * 1.3);
-            label_Test.Text = "Ошибка тестирования: ";
+            countRow = (int) (countRow * 1.05);
+            label_Test.Text = "Testing error: ";
 
-            // button_Sample.Enabled = true;
-            //  button_test.Enabled = false;
-
-            // countRow = (int)Math.Ceiling(countRow*0.3);
-
-            // чтение входных данных
-            //x = ReaderWriter.ReadMatrix("iris_test.txt", countRow, numInput);
-
-            //double[] d = ReaderWriter.ReadVector("iris_test.txt", countRow, numInput);
-            //D = new double[countRow, numOutput];
-            //RecountD(d);
             if (checkBox1.Checked == true)
                 CreateValues("dollar.txt");
             else
@@ -242,17 +210,18 @@ namespace RBF_1
 
             if (checkBox1.Checked == true)
             {
-                chart1.ChartAreas[0].AxisY.Minimum = 15;
-                chart1.ChartAreas[0].AxisY.Maximum = 90;
+                chart1.ChartAreas[0].AxisY.Minimum = 30;
+                chart1.ChartAreas[0].AxisY.Maximum = 100;
             }
             else
             {
-               chart1.ChartAreas[0].AxisY.Minimum = 0;
-                chart1.ChartAreas[0].AxisY.Maximum = 2;
+                chart1.ChartAreas[0].AxisY.Minimum = 0;
+                chart1.ChartAreas[0].AxisY.Maximum = 1000;
             }
+
             chart1.Legends[0].Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            chart1.Series[0].Name = "Полученное значение";
-            chart1.Series[1].Name = "Исходное значение";
+            chart1.Series[0].Name = "Received value";
+            chart1.Series[1].Name = "Original value";
             chart1.Series[0].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
             chart1.Series[1].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
 
@@ -273,27 +242,23 @@ namespace RBF_1
             //    }
             ////    listBox1.Items.Add(resultD + " | " + resultY);
             //}
-            label_Test.Text = "Ошибка тестирования: " + errTest;
+            label_Test.Text = "Testing error: " + errTest;
         }
 
         private void textBox_n_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void textBox_C_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void label4_Click(object sender, EventArgs e)
         {
-
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -352,10 +317,12 @@ namespace RBF_1
                     dou += errTest;
                     // listBox1.Items.Add(errTest);
                 }
+
                 Console.WriteLine("(" + q + ";" + dou / 10 + ")");
                 //   Console.WriteLine("(" + q +";" + dou / 10 + ")");
                 //listBox1.Items.Add("Итого: " + dou / 10);
             }
+
             for (double q = 0.1; q < 1; q = q + 0.02)
             {
                 n = q;
@@ -408,12 +375,16 @@ namespace RBF_1
                     dou += errTest;
                     // listBox1.Items.Add(errTest);
                 }
+
                 Console.WriteLine("(" + q + ";" + dou / 10 + ")");
                 //   Console.WriteLine("(" + q +";" + dou / 10 + ")");
                 // listBox1.Items.Add("Итого: " + dou / 10);
             }
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
-
-

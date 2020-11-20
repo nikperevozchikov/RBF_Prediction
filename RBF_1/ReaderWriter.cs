@@ -28,22 +28,25 @@ namespace RBF_1
                         matrix[i, j] = Convert.ToDouble(inData[j].Replace('.', ','));
                         sumSq += Math.Pow(matrix[i, j], 2);
                     }
+
                     sqrtSum = Math.Sqrt(sumSq);
 
                     for (int j = 0; j < countColumn; j++)
                     {
                         matrix[i, j] = matrix[i, j] / sqrtSum;
                     }
-
                 }
+
                 sr.Close();
             }
             catch (IOException e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+
             return new Matrix(matrix);
         }
+
         static public double[] ReadVector(string fileName, int countRow, int countColumn)
         {
             double[] arr = new double[countRow];
@@ -57,12 +60,14 @@ namespace RBF_1
                     string[] inData = line.Split(',');
                     arr[i] = Convert.ToDouble(inData[countColumn].Replace('.', ','));
                 }
+
                 sr.Close();
             }
             catch (IOException e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+
             return arr;
         }
 
@@ -76,15 +81,17 @@ namespace RBF_1
                 for (int i = 0; i < countRow; i++)
                 {
                     line = sr.ReadLine();
-                   // string[] inData = line.Split(',');
+                    // string[] inData = line.Split(',');
                     arr[i] = Convert.ToDouble(line.Replace('.', ','));
                 }
+
                 sr.Close();
             }
             catch (IOException e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+
             return arr;
         }
 
@@ -95,7 +102,7 @@ namespace RBF_1
             Matrix c = new Matrix(numHidden, countColumn); //3x4
             try
             {
-               // StreamReader sr = new StreamReader(fileName);
+                // StreamReader sr = new StreamReader(fileName);
 
                 for (int i = 0; i < countRow; i++)
                 {
@@ -105,6 +112,7 @@ namespace RBF_1
                         matrix[i, j] = inp.Get(i, j);
                         sumSq += Math.Pow(matrix[i, j], 2);
                     }
+
                     double sqrtSum = Math.Sqrt(sumSq);
                     for (int j = 0; j < countColumn; j++)
                     {
@@ -117,11 +125,11 @@ namespace RBF_1
                 {
                     for (int j = 0; j < countColumn; j++) //4
                     {
-                        for(int q = 0; q<c.Row; q++)
-                        c.Set(q, j, c.Get(q, j) + matrix[i, j]);
-
+                        for (int q = 0; q < c.Row; q++)
+                            c.Set(q, j, c.Get(q, j) + matrix[i, j]);
                     }
                 }
+
                 for (int i = 0; i < numHidden; i++)
                 {
                     for (int j = 0; j < countColumn; j++)
@@ -130,7 +138,9 @@ namespace RBF_1
                         if (numHidden > 3)
                         {
                             if (i > 2)
-                            { c.Set(i, j, (c.Get(i - 1, j) + 40) / (countRow)); }
+                            {
+                                c.Set(i, j, (c.Get(i - 1, j) + 40) / (countRow));
+                            }
                         }
                     }
                 }
@@ -139,6 +149,7 @@ namespace RBF_1
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+
             return (c);
         }
 
@@ -156,6 +167,7 @@ namespace RBF_1
                 Console.WriteLine("Exception: " + e.Message);
             }
         }
+
         //public static void PrintVector(double[] vector)
         //{
         //    for (int i = 0; i < vector.Length; i++)

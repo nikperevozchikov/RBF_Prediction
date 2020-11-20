@@ -12,8 +12,19 @@ namespace RBF_1
         int row, column;
         private static Random rnd = new Random();
 
-        public int Row { get { return row; } }
-        public int Column { get { return column; } }
+        public int Row
+        {
+            get
+            {
+                return row;
+
+            }
+        }
+
+        public int Column
+        {
+            get { return column; }
+        }
 
         public Matrix(double[,] matrix)
         {
@@ -24,14 +35,16 @@ namespace RBF_1
 
         public Matrix(int row, int colunm)
         {
-           this.row = row;
+            this.row = row;
             this.column = colunm;
             array = new double[row, column];
         }
+
         public double Get(int i, int j)
         {
             return array[i, j];
         }
+
         public double Set(int i, int j, double value)
         {
             return array[i, j] = value;
@@ -47,6 +60,7 @@ namespace RBF_1
                 {
                     str += array[i, j] + "\t";
                 }
+
                 str += "\n";
             }
 
@@ -69,6 +83,7 @@ namespace RBF_1
                     m.array[i, j] = m1.array[i, j] - m2.array[i, j];
                 }
             }
+
             m.row = m1.row;
             m.column = m1.column;
             return m;
@@ -90,10 +105,10 @@ namespace RBF_1
                     m.array[i, j] = m1.array[i, j] + m2.array[i, j];
                 }
             }
+
             m.row = m1.row;
             m.column = m1.column;
             return m;
         }
     }
 }
-

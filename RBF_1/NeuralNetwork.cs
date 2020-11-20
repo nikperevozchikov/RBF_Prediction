@@ -17,10 +17,10 @@ namespace RBF_1
         private Matrix weight;
         private double[] w0;
         private Matrix centroids;
-        private Matrix x;      //Входые сигналы
+        private Matrix x; //Входые сигналы
         private Random rnd = new Random();
         private static double R;
-        private double n;//= 0.01;
+        private double n; //= 0.01;
         private double errPr;
         private double errTest;
         private double[,] sigmoida;
@@ -30,9 +30,12 @@ namespace RBF_1
         public Matrix result;
         public int countIter;
 
-        public NeuralNetwork() { }
+        public NeuralNetwork()
+        {
+        }
 
-        public NeuralNetwork(int countRow, int numInput, int numHidden, int numOutput, Matrix x, Matrix centroids, double n, int temp, double errTrain)
+        public NeuralNetwork(int countRow, int numInput, int numHidden, int numOutput, Matrix x, Matrix centroids,
+            double n, int temp, double errTrain)
         {
             this.countRow = countRow;
             this.numInput = numInput;
@@ -84,10 +87,11 @@ namespace RBF_1
                 {
                     sum += Math.Pow((x.Get(numVector, j) - centroids.Get(i, j)), 2);
                 }
+
                 evk = Math.Sqrt(sum);
                 num.Add(i, evk);
-
             }
+
             var l = num.OrderBy(value => value.Value);
             num = l.ToDictionary((keyItem) => keyItem.Key, (valueItem) => valueItem.Value);
 
@@ -98,6 +102,7 @@ namespace RBF_1
                 num.Remove(indexWin);
                 indexWin = num.ElementAt(0).Key;
             }
+
             neuronWin.Add(indexWin);
 
             return indexWin;
@@ -118,13 +123,12 @@ namespace RBF_1
             int[] masVin = new int[numHidden];
             int m = 0;
             int m1 = 0;
-      
+
             //Эпоха
             while (flg)
             {
                 for (int ti = 0; ti < x.Row; ti++) //105
                 {
-
                     centroidWin.Clear();
                     for (int i = 0; i < centroids.Row; i++) //3
                     {
@@ -133,10 +137,11 @@ namespace RBF_1
                         {
                             sum += Math.Pow((x.Get(ti, j) - centroids.Get(i, j)), 2);
                         }
+
                         cent = Math.Sqrt(sum);
                         centroidWin.Add(cent);
-
                     }
+
                     bestIdx = centroidWin.IndexOf(centroidWin.Min());
 
                     evk = 0;
@@ -149,7 +154,8 @@ namespace RBF_1
                         {
                             if (i == bestIdx)
                             {
-                                centroids.Set(bestIdx, j, centroids.Get(bestIdx, j) + n * (x.Get(ti, j) - centroids.Get(bestIdx, j)));
+                                centroids.Set(bestIdx, j,
+                                    centroids.Get(bestIdx, j) + n * (x.Get(ti, j) - centroids.Get(bestIdx, j)));
 
                                 //Для каждой победившей, считаем евклидову норму с ti, находим err
                                 sum += Math.Pow((x.Get(ti, j) - centroids.Get(bestIdx, j)), 2);
@@ -162,7 +168,6 @@ namespace RBF_1
 
                             //для каждой центроиды-победителя, смотрим уменьшилась ли ошибка
                             error += evk;
-
                         }
                     }
                 }
@@ -171,14 +176,17 @@ namespace RBF_1
 
                 if (errEvkC.Count() > 1)
                 {
-                    if (Math.Round(errEvkC.ElementAt(errEvkC.Count - 1), 5) == Math.Round(errEvkC.ElementAt(errEvkC.Count - 2), 5))
+                    if (Math.Round(errEvkC.ElementAt(errEvkC.Count - 1), 5) ==
+                        Math.Round(errEvkC.ElementAt(errEvkC.Count - 2), 5))
                     {
                         flg = false;
                     }
                 }
+
                 // Console.WriteLine("t " + t);
                 t++;
             }
+
             return centroids;
         }
 
@@ -198,9 +206,9 @@ namespace RBF_1
                             temp += Math.Pow(centroids.Get(i, j) - centroids.Get(k, j), 2);
                         }
                     }
-                    sigmoida[i,j] = Math.Sqrt((1 / R) * temp);
+
+                    sigmoida[i, j] = Math.Sqrt((1 / R) * temp);
                 }
-               
             }
         }
 
@@ -234,7 +242,8 @@ namespace RBF_1
         //    }
         //}
 
-        public NeuralNetwork TrainNetwork(Matrix x, Matrix centroids, int countRow, int numInput, int numHidden, int numOutput, double[,] d, out double[] res)
+        public NeuralNetwork TrainNetwork(Matrix x, Matrix centroids, int countRow, int numInput, int numHidden,
+            int numOutput, double[,] d, out double[] res)
         {
             R = centroids.Row - 1;
             List<double> sko = new List<double>();
@@ -256,12 +265,12 @@ namespace RBF_1
             //Расчет сигмоиды
             Sigmoida(centroids);
 
-            double[,] u = new double[countRow, numHidden];  //3
-            double[,] f = new double[countRow, numHidden];  //3 
+            double[,] u = new double[countRow, numHidden]; //3
+            double[,] f = new double[countRow, numHidden]; //3 
             Matrix y = new Matrix(countRow, numOutput); //3
             double temp1 = 0;
             int r = countIter;
-            while (r!=0)
+            while (r != 0)
             {
                 r--;
                 eSum = 0;
@@ -276,22 +285,23 @@ namespace RBF_1
                             sum = 0;
                             for (int j = 0; j < centroids.Column; j++) //4
                             {
-                                sum += Math.Pow(x.Get(ti, j) - centroids.Get(i, j), 2)/ (Math.Pow(sigmoida[i,j], 2));
+                                sum += Math.Pow(x.Get(ti, j) - centroids.Get(i, j), 2) / (Math.Pow(sigmoida[i, j], 2));
                             }
 
-                            u[ti, i] = sum ; //u
+                            u[ti, i] = sum; //u
 
                             f[ti, i] = Math.Exp(-0.5 * u[ti, i]);
                             temp1 = 0;
                         }
+
                         for (int w = 0; w < weight.Row; w++)
                         {
                             //    if(w==0)
                             temp1 += weight.Get(w, q) * f[ti, q];
                             //      else
                             //  temp1 -= weight.Get(w, q) * f[ti, q];
-
                         }
+
                         //for (int w = 0; w < weight.Column; w++)
                         //{
                         //    temp1 += weight.Get(q, w) * f[ti, q];
@@ -309,9 +319,11 @@ namespace RBF_1
 
                         e += Math.Pow(y.Get(ti, q) - d[ti, q], 2);
                     }
+
                     // e = Math.Sqrt(e);
                     eSum += e;
                 }
+
                 sko.Add(Math.Sqrt((eSum / (m * p - 1))));
                 t++;
             }
@@ -354,14 +366,16 @@ namespace RBF_1
             }
 
             res = new double[countRow];
-            for(int i = 0; i<countRow; i++)
+            for (int i = 0; i < countRow; i++)
             {
                 res[i] = y.Get(i, 0);
+               //
             }
-            
+
             temp = t;
             errTrain = Math.Round(errPr, 10);
-            NeuralNetwork nr = new NeuralNetwork(countRow, numInput, numHidden, numOutput, x, centroids, n, temp, errTrain);
+            NeuralNetwork nr =
+                new NeuralNetwork(countRow, numInput, numHidden, numOutput, x, centroids, n, temp, errTrain);
 
             return nr;
         }
@@ -369,7 +383,6 @@ namespace RBF_1
 
         public double TestNetwork(Matrix x, double[,] d, int countRow, int numInput, int numOutput, int numHidden)
         {
-
             List<double> sko = new List<double>();
             double[] error = new double[countRow]; //45
             double[,] newX = new double[countRow, numOutput];
@@ -379,11 +392,11 @@ namespace RBF_1
             double sum = 0;
 
             double[,] gradient = new double[numOutput, numHidden];
-            double[,] u = new double[countRow, numHidden];  //3
-            double[,] f = new double[countRow, numHidden];  //3 
+            double[,] u = new double[countRow, numHidden]; //3
+            double[,] f = new double[countRow, numHidden]; //3 
             Matrix y = new Matrix(countRow, numOutput); //3
             double temp = 0;
-            double temp1=0;
+            double temp1 = 0;
             //Тестирование сети
             for (int ti = 0; ti < x.Row; ti++) //105
             {
@@ -402,14 +415,15 @@ namespace RBF_1
                         f[ti, i] = Math.Exp(-0.5 * u[ti, i]);
                         temp1 = 0;
                     }
+
                     for (int w = 0; w < weight.Row; w++)
                     {
-                    //    if(w==0)
-temp1 += weight.Get(w,q) * f[ti, q];
-                  //      else
-                          //  temp1 -= weight.Get(w, q) * f[ti, q];
-
+                        //    if(w==0)
+                        temp1 += weight.Get(w, q) * f[ti, q];
+                        //      else
+                        //  temp1 -= weight.Get(w, q) * f[ti, q];
                     }
+
                     //Выход
                     y.Set(ti, q, temp1);
                 }
@@ -431,6 +445,7 @@ temp1 += weight.Get(w,q) * f[ti, q];
             str.WriteLine(y);
             str.Close();
         }
+
         public double ErrorTesting(Matrix y, double[,] d)
         {
             double countErr = 0;
@@ -450,10 +465,9 @@ temp1 += weight.Get(w,q) * f[ti, q];
                     else countRight++;
                 }
             }
+
             return sko / y.Row;
             return errTest = Math.Round((countErr / countRight), 7);
         }
     }
 }
-
-
